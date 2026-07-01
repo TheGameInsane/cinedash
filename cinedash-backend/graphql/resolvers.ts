@@ -1,5 +1,5 @@
-import { User } from '../models/User';
-import { hashPassword, comparePassword, generateToken } from '../utils/auth';
+import { User } from '../models/User.js';
+import { hashPassword, comparePassword, generateToken } from '../utils/auth.js';
 import { OAuth2Client } from 'google-auth-library';
 import { Response } from 'express';
 
@@ -7,10 +7,11 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID, process.env.
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  secure: true,                    // Required when sameSite is 'none'
+  sameSite: 'none' as const,       // Required for cross-site cookies (Vercel → Render)
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   path: '/',
+  partitioned: true,               // Required by Chrome's CHIPS for cross-site cookies
 };
 
 interface Context {
